@@ -1,6 +1,6 @@
-﻿using AssemblerCore.Commands;
+﻿using VMTranslator.Commands;
 
-namespace AssemblerCore
+namespace VMTranslator
 {
     public enum IType
     {
@@ -9,16 +9,16 @@ namespace AssemblerCore
 
     public class Parser
     {
-        private List<Command> _instructions;
+        private List<Command> _commands;
 
         public Parser()
         {
-            _instructions = new List<Command>();
+            _commands = new List<Command>();
         }
 
         public List<Command> GetParsedLines()
         {
-            return _instructions;
+            return _commands;
         }
 
         public void Parse(string filePath)
@@ -38,8 +38,7 @@ namespace AssemblerCore
                 }
             });
 
-            // pretranslate lines
-            // lines ready for translation
+            _preTranslationList(rawLines);
         }
 
         private List<string> _readFile(string filePath)
@@ -47,24 +46,36 @@ namespace AssemblerCore
             return new List<string>(File.ReadAllLines(filePath));
         }
 
-        private string _writePushCommand(string line)
+        private void _preTranslationList(List<string> lines)
         {
-            return "";
+            lines.ForEach(line =>
+            {
+                var commandType = _commandType(line);
+
+                Command command;
+                switch (commandType)
+                {
+                    case IType.PushCommand:
+                        command = new PushCmd(line);
+                        _commands.Add(command);
+                        break;
+                    case IType.PopCommand:
+                        command = new PopCmd(line);
+                        _commands.Add(command);
+                        break;
+                    case IType.Operation:
+                        command = new OperatorCmd(line);
+                        _commands.Add(command);
+                        break;
+                }
+            });
         }
 
-        private string _writePopCommand(string line)
+        private IType _commandType(string line)
         {
-            return "";
-        }
-
-        private string _writeOperation(string line)
-        {
-            return "";
-        }
-
-        private IType _instructionType(string line)
-        {
-            return IType.PushCommand;
+            if (line.Trim().StartsWith("push")) return IType.PushCommand;
+            else if (line.Trim().StartsWith("pop")) return IType.PopCommand;
+            else return IType.Operation;
         }
     }
 }

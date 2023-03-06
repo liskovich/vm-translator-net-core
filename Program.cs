@@ -1,4 +1,4 @@
-﻿using AssemblerCore;
+﻿using VMTranslator;
 
 class Program {
     static void Main(string[] args) {
@@ -11,6 +11,13 @@ class Program {
             if (lines.IndexOf(line) % 1000 == 0) Console.WriteLine("Loading...");
         });
 
-        // generate .asm files
+        var codeGenerator = new AsmGenerator(lines);
+        Helper.RefreshJumpIndex();
+
+        Task.Run(async () =>
+        {
+            await codeGenerator.GenerateAsmFile($"{args[1]}.asm");
+            Console.WriteLine("File loaded");
+        }).Wait();
     }
 }
