@@ -13,6 +13,7 @@ class Program {
 
         var codeGenerator = new AsmGenerator(lines);
         Helper.RefreshJumpIndex();
+        Helper.RefreshLabel();
 
         Task.Run(async () =>
         {

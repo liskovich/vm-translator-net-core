@@ -4,7 +4,8 @@ namespace VMTranslator
 {
     public enum IType
     {
-        PushCommand, PopCommand, Operation
+        PushCommand, PopCommand, Operation, 
+        Label, Return, IfStatement, Goto, Function, Call
     }
 
     public class Parser
@@ -67,6 +68,30 @@ namespace VMTranslator
                         command = new OperatorCmd(line);
                         _commands.Add(command);
                         break;
+                    case IType.Label:
+                        command = new LabelCmd(line);
+                        _commands.Add(command);
+                        break;
+                    case IType.IfStatement:
+                        command = new IfCmd(line);
+                        _commands.Add(command);
+                        break;
+                    case IType.Goto:
+                        command = new GotoCmd(line);
+                        _commands.Add(command);
+                        break;
+                    case IType.Function:
+                        command = new FunctionCmd(line);
+                        _commands.Add(command);
+                        break;
+                    case IType.Call:
+                        command = new CallCmd(line);
+                        _commands.Add(command);
+                        break;
+                    case IType.Return:
+                        command = new ReturnCmd(line);
+                        _commands.Add(command);
+                        break;
                 }
             });
         }
@@ -75,6 +100,12 @@ namespace VMTranslator
         {
             if (line.Trim().StartsWith("push")) return IType.PushCommand;
             else if (line.Trim().StartsWith("pop")) return IType.PopCommand;
+            else if (line.Trim().StartsWith("label")) return IType.Label;
+            else if (line.Trim().StartsWith("if")) return IType.IfStatement;
+            else if (line.Trim().StartsWith("goto")) return IType.Goto;
+            else if (line.Trim().StartsWith("function")) return IType.Function;
+            else if (line.Trim().StartsWith("call")) return IType.Call;
+            else if (line.Trim().StartsWith("return")) return IType.Return;
             else return IType.Operation;
         }
     }
